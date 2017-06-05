@@ -1,11 +1,21 @@
-// Enemies our player must avoid
-var Enemy = function() {
+// Enemies our player must avoid, send type of the eneby in the parameter
+var Enemy = function(type) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
-
+    this.x = 0;
+    this.y = (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30;
+    this.type = type;
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
+    var typeSheet = [
+        {
+            name: "bug",
+            path: 'images/enemy-bug.png',
+            speed: 50
+        }
+    ];
+    this.sprite = typeSheet[this.type].path;
+    this.speed = typeSheet[this.type].speed;
 };
 
 // Update the enemy's position, required method for game
@@ -14,6 +24,7 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    this.x += this.speed*dt;
 };
 
 // Draw the enemy on the screen, required method for game
@@ -75,7 +86,7 @@ var canvasSchema = {
     numRows: 6,
     numCols: 5
 }
-var allEnemies = [new Enemy(),new Enemy(),new Enemy()];
+var allEnemies = [new Enemy(0)];
 var player = new Player();
 
 
