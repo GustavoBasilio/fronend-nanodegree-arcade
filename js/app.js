@@ -1,19 +1,25 @@
 // Enemies our player must avoid, send type of the eneby in the parameter
 var Enemy = function(type) {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-    this.x = 0;
-    this.y = (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30;
+    // Variables applied to each of our instances go here
+    var typeSheet = {
+        bug: {
+            path: 'images/enemy-bug.png',
+            speed: 50,
+            x: 0,
+            y: (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30
+        },
+        rock: {
+            path: 'images/enemy-bug.png',
+            speed: 0,
+            x: (Math.floor(Math.random()*5))*canvasSchema.blockWidth,
+            y: (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30
+        }
+    };
     this.type = type;
+    this.x = typeSheet[this.type].x;
+    this.y = typeSheet[this.type].y;
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    var typeSheet = [
-        {
-            name: "bug",
-            path: 'images/enemy-bug.png',
-            speed: 50
-        }
-    ];
     this.sprite = typeSheet[this.type].path;
     this.speed = typeSheet[this.type].speed;
 };
@@ -86,7 +92,7 @@ var canvasSchema = {
     numRows: 6,
     numCols: 5
 }
-var allEnemies = [new Enemy(0)];
+var allEnemies = [new Enemy("bug"),new Enemy("rock")];
 var player = new Player();
 
 
