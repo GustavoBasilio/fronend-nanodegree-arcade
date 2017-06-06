@@ -64,14 +64,16 @@ var Player = function() {
     this.score = {
         points: 0,
         level: 1,
-        lifes: 3,
-        startTime: new Date()
+        lifes: 1,
+        startTime: new Date(),
+        endTime: new Date()
     }
 }
 
 Player.prototype.update = function(dt) {
-    if(this.status === 1){
-        
+    if(this.score.lifes === 0 && this.status == 1){
+        this.status = 2;
+        this.score.endTime = new Date();
     }
 }
 
@@ -82,6 +84,8 @@ Player.prototype.render = function(){
     this.gameInfo();
     this.generateEnemies();
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }else if(this.status === 2){
+    this.gameOver();
   }
 }
 
@@ -119,6 +123,21 @@ Player.prototype.gameInfo = function (){
     //Level 
     ctx.textAlign = "center";
     ctx.fillText("LEVEL "+this.score.level,canvasSchema.blockWidth*2.5,30);
+}
+
+//Create and display Game Over results
+Player.prototype.gameOver = function() {
+    //Overlay
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
+    ctx.fillRect(canvasSchema.blockWidth*1-50,canvasSchema.blockHeight*2,canvasSchema.blockWidth*3+100,canvasSchema.blockHeight*3);
+    //Title
+    ctx.font = "bold 18pt Courier";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText("GAME OVER",canvasSchema.blockWidth*2.5,canvasSchema.blockHeight*2.5);
+    
+    //Charactem sprite
+    ctx.drawImage(Resources.get(this.sprite), canvasSchema.blockWidth*3, 35+(canvasSchema.blockHeight+100));
 }
 
 //Create the menu layout
