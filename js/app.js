@@ -46,6 +46,11 @@ var Player = function() {
     this.y = canvasSchema.blockHeight * 5 - 30;
     this.status = 0;
     this.sprite = "";
+    this.score = {
+        points: 0,
+        lifes: 3,
+        startTime: new Date()
+    }
 }
 
 Player.prototype.update = function(dt) {
@@ -55,9 +60,32 @@ Player.prototype.update = function(dt) {
 Player.prototype.render = function(){
   if(this.status === 0) {
     this.createMenu();
-  }else {
+  }else if(this.status === 1){
+    this.gameInfo();
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
   }
+}
+
+//Create current game player info
+Player.prototype.gameInfo = function (){
+    //Create the timer
+    var timeDiff = new Date() - this.score.startTime,
+        minutesDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000),
+        secondsDiff = Math.floor((timeDiff/1000)%60);
+    minutesDiff = (minutesDiff.toString().length === 1) ? "0"+minutesDiff : minutesDiff;
+    secondsDiff = (secondsDiff.toString().length === 1) ? "0"+secondsDiff : secondsDiff;
+    ctx.font = "bold 18pt Courier";
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#000000";
+    ctx.fillText(minutesDiff+":"+secondsDiff,canvasSchema.blockWidth*5,30);
+
+    //Life Count
+    for(var i=0;i<this.score.lifes;i++){
+        ctx.drawImage(Resources.get("images/Heart.png"), canvasSchema.blockWidth*4-20-30*i, -5,30,50);
+    }
+
+    //Score count
+    ctx.fillText("SCORE:"+this.score.points,canvasSchema.blockWidth*1,30);
 }
 
 //Create the menu layout
@@ -109,7 +137,10 @@ Player.prototype.selectChar = function(positionX,positionY) {
       positionRow =(Math.floor(positionY/canvasSchema.blockHeight)-2);
   if(positionX > canvasSchema.blockWidth*2 && positionY > (canvasSchema.blockHeight*5+15 -  canvasSchema.marginTop)) {
     //Start the game
-      this.status = 1;
+    if(this.sprite != "" && typeof this.sprite != "undefined"){
+        this.score.startTime = new Date();
+        this.status = 1;
+    }
   }else if(positionRow >= 0 && positionColumn >= 0 && positionColumn < 3){
     //Select the character
     var current = positionColumn + 3*positionRow;
