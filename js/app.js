@@ -75,6 +75,12 @@ Player.prototype.update = function(dt) {
         this.status = 2;
         this.score.endTime = new Date();
     }
+    if(this.status == 1 && this.y == -30 ){
+        this.x = new Player().x;
+        this.y = new Player().y;
+        this.score.points += 10;
+        this.score.level += 1;
+    }
 }
 
 Player.prototype.render = function(){
