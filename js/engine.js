@@ -79,13 +79,19 @@ var Engine = (function(global) {
      */
     function update(dt) {
         canvas.addEventListener("click", player.handleClick);
-        map.map((item) => {item = 0;});
         updateEntities(dt);
         checkCollisions();
     }
 
     function checkCollisions() {
-
+        allEnemies.forEach((enemy) => {
+            if(enemy.y === player.y){
+                if(enemy.x + canvasSchema.blockWidth - 40 >  player.x && enemy.x < player.x + canvasSchema.blockWidth - 40) {
+                    player.score.lifes -= 1;
+                    reset();
+                }
+            }
+        });
     }
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
@@ -168,7 +174,8 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        player.x = new Player().x;
+        player.y = new Player().y;
     }
 
     /* Go ahead and load all of the images we know we're going to need to
