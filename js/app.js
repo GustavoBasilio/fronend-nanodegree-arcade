@@ -1,11 +1,3 @@
-//Map created for validation
-var map = [
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0]    
-];
 
 // Enemies our player must avoid, send type of the eneby in the parameter
 var Enemy = function(type) {
@@ -52,6 +44,50 @@ Enemy.prototype.update = function(dt) {
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+
+
+// Enemies our player must avoid, send type of the eneby in the parameter
+var Gem = function(type) {
+    var typeSheet = {
+        blue: {
+            path: 'images/Gem Blue.png',
+            value: 5,
+            speed: 0,
+            x: (Math.floor(Math.random()*5))*canvasSchema.blockWidth,
+            y: (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30
+        },
+        green: {
+            path: 'images/Gem Green.png',
+            value: 10,
+            speed: 0,
+            x: (Math.floor(Math.random()*5))*canvasSchema.blockWidth,
+            y: (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30
+        },
+        orange: {
+            path: 'images/Gem Green.png',
+            value: 20,
+            speed: 0,
+            x: (Math.floor(Math.random()*5))*canvasSchema.blockWidth,
+            y: (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30
+        }
+    };
+    this.type = type;
+    this.x = typeSheet[this.type].x;
+    this.y = typeSheet[this.type].y;
+    this.sprite = typeSheet[this.type].path;
+    this.speed = typeSheet[this.type].speed;
+    this.status = 1;
+};
+
+
+Gem.prototype.update = function  (){
+    
+}
+
+Gem.prototype.render = function  (){
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -182,7 +218,7 @@ Player.prototype.createMenu = function() {
 //The Click handler of the canvas
 Player.prototype.handleClick = function(event) {
   var positionX = event.pageX - this.offsetLeft,
-      positionY = event.pageY - canvas.offsetTop - canvasSchema.marginTop;
+      positionY = event.pageY - this.offsetTop - canvasSchema.marginTop;
   if(player.status == 0){
     player.selectChar(positionX,positionY);
   }
@@ -250,7 +286,8 @@ var canvasSchema = {
     numRows: 6,
     numCols: 5
 }
-var allEnemies = [];
+var allEnemies = [],
+    allGems = [new Gem("blue")];
 var player = new Player();
 
 

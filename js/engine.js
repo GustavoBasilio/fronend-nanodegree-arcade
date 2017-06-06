@@ -104,6 +104,9 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+        allGems.forEach(function(gem) {
+            gem.update(dt);
+        });
         player.update();
     }
 
@@ -166,6 +169,10 @@ var Engine = (function(global) {
             }
         });
 
+        allGems.forEach(function(gem) {
+            gem.render();
+        });
+        
         player.render();
     }
 
@@ -194,6 +201,9 @@ var Engine = (function(global) {
         'images/char-pink-girl.png',
         'images/char-princess-girl.png',
         'images/Selector.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
         'images/Heart.png'
     ]);
     Resources.onReady(init);
@@ -203,5 +213,4 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
-    global.canvas = canvas;
 })(this);
