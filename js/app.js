@@ -48,6 +48,7 @@ var Player = function() {
     this.sprite = "";
     this.score = {
         points: 0,
+        level: 1,
         lifes: 3,
         startTime: new Date()
     }
@@ -86,6 +87,11 @@ Player.prototype.gameInfo = function (){
 
     //Score count
     ctx.fillText("SCORE:"+this.score.points,canvasSchema.blockWidth*1,30);
+
+
+    //Level 
+    ctx.textAlign = "center";
+    ctx.fillText("LEVEL "+this.score.level,canvasSchema.blockWidth*2.5,30);
 }
 
 //Create the menu layout
