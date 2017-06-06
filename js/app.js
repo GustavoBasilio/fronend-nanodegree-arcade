@@ -60,6 +60,7 @@ Player.prototype.render = function(){
   }
 }
 
+//Create the menu layout
 Player.prototype.createMenu = function() {
   //If character is not selected
   ctx.fillStyle = "rgba(0,0,0,0.7)";
@@ -92,48 +93,60 @@ Player.prototype.createMenu = function() {
   });
 }
 
+//The Click handler of the canvas
 Player.prototype.handleClick = function(event) {
+  var positionX = event.pageX - this.offsetLeft,
+      positionY = event.pageY - canvas.offsetTop - canvasSchema.marginTop;
   if(player.status == 0){
-    player.selectChar(event.pageX,event.pageY);
+    player.selectChar(positionX,positionY);
   }
 }
 
-Player.prototype.selectChar = function(pageX,pageY) {
-  var positionX = pageX - canvas.offsetLeft,
-      positionY = pageY - canvas.offsetTop - canvasSchema.marginTop,
-      positionColumn = (Math.floor(positionX/canvasSchema.blockWidth)-1),
+//Select the clicked character
+Player.prototype.selectChar = function(positionX,positionY) {
+  //Get he position of the click and the block clicked
+  var positionColumn = (Math.floor(positionX/canvasSchema.blockWidth)-1),
       positionRow =(Math.floor(positionY/canvasSchema.blockHeight)-2);
-  if(positionX > canvasSchema.blockWidth*2 &&
-            positionY > (canvasSchema.blockHeight*5+15 -  canvasSchema.marginTop)) {
+  if(positionX > canvasSchema.blockWidth*2 && positionY > (canvasSchema.blockHeight*5+15 -  canvasSchema.marginTop)) {
+    //Start the game
       this.status = 1;
   }else if(positionRow >= 0 && positionColumn >= 0 && positionColumn < 3){
+    //Select the character
     var current = positionColumn + 3*positionRow;
     this.sprite = this.char[current];
   }
 }
-Player.prototype.handleInput = function(key) {
+
+//Move the player
+Player.prototype.move = function(key){
+  if(this.status == 1){
     switch (key){
         case 'left':
-            if(player.x - canvasSchema.blockWidth >= 0){
-                player.x -= canvasSchema.blockWidth;
+            if(this.x - canvasSchema.blockWidth >= 0){
+                this.x -= canvasSchema.blockWidth;
             }
         break;
         case 'right':
-            if(player.x + canvasSchema.blockWidth < canvasSchema.width){
-                player.x += canvasSchema.blockWidth;
+            if(this.x + canvasSchema.blockWidth < canvasSchema.width){
+                this.x += canvasSchema.blockWidth;
             }
         break;
         case 'up':
-            if(player.y - canvasSchema.blockHeight >= -canvasSchema.marginTop){
-                player.y -= canvasSchema.blockHeight;
+            if(this.y - canvasSchema.blockHeight >= -canvasSchema.marginTop){
+                this.y -= canvasSchema.blockHeight;
             }
         break;
         case 'down':
-            if(player.y + canvasSchema.blockHeight < canvasSchema.blockHeight*(canvasSchema.numRows-1)){
-                player.y += canvasSchema.blockHeight;
+            if(this.y + canvasSchema.blockHeight < canvasSchema.blockHeight*(canvasSchema.numRows-1)){
+                this.y += canvasSchema.blockHeight;
             }
         break;
     }
+  }
+}
+//Handle the keyboard inputs
+Player.prototype.handleInput = function(key) {
+  player.move(key);
 }
 
 // Now instantiate your objects.
