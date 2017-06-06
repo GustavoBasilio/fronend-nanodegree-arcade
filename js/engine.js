@@ -79,10 +79,14 @@ var Engine = (function(global) {
      */
     function update(dt) {
         canvas.addEventListener("click", player.handleClick);
+        map.map((item) => {item = 0;});
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
     }
 
+    function checkCollisions() {
+
+    }
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
      * their update() methods. It will then call the update function for your
@@ -147,8 +151,13 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
+        allEnemies = allEnemies.filter((enemy) => {
+            if(enemy.status === 1){
+                enemy.render();
+                return true;
+            }else {
+                return false;
+            }
         });
 
         player.render();

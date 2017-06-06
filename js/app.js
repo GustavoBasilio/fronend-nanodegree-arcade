@@ -1,3 +1,12 @@
+//Map created for validation
+var map = [
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0]    
+];
+
 // Enemies our player must avoid, send type of the eneby in the parameter
 var Enemy = function(type) {
     // Variables applied to each of our instances go here
@@ -5,7 +14,7 @@ var Enemy = function(type) {
         bug: {
             path: 'images/enemy-bug.png',
             speed: 50,
-            x: 0,
+            x: -canvasSchema.blockWidth,
             y: (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30
         },
         rock: {
@@ -22,6 +31,7 @@ var Enemy = function(type) {
     // a helper we've provided to easily load images
     this.sprite = typeSheet[this.type].path;
     this.speed = typeSheet[this.type].speed;
+    this.status = 1;
 };
 
 // Update the enemy's position, required method for game
@@ -30,7 +40,12 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    this.x += this.speed*dt;
+    if(this.status){
+        this.x += this.speed*dt+player.score.level;
+        if(this.x > canvasSchema.width){
+            this.status = 0;
+        }
+    }
 };
 
 // Draw the enemy on the screen, required method for game
@@ -55,7 +70,9 @@ var Player = function() {
 }
 
 Player.prototype.update = function(dt) {
-
+    if(this.status === 1){
+        
+    }
 }
 
 Player.prototype.render = function(){
@@ -63,8 +80,19 @@ Player.prototype.render = function(){
     this.createMenu();
   }else if(this.status === 1){
     this.gameInfo();
+    this.generateEnemies();
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
   }
+}
+
+//Generate enemies depending on the level
+Player.prototype.generateEnemies = function() {
+    this.lastRender = this.lastRender ? this.lastRender : new Date(),
+        interval = 2500/this.score.level;
+    if(new Date() - this.lastRender > interval || allEnemies.length === 0) {
+        this.lastRender = new Date();
+        allEnemies.push(new Enemy("bug"));
+    }
 }
 
 //Create current game player info
@@ -87,7 +115,6 @@ Player.prototype.gameInfo = function (){
 
     //Score count
     ctx.fillText("SCORE:"+this.score.points,canvasSchema.blockWidth*1,30);
-
 
     //Level 
     ctx.textAlign = "center";
