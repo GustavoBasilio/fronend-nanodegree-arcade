@@ -99,7 +99,14 @@ var Player = function() {
     this.x = canvasSchema.blockWidth * 2;
     this.y = canvasSchema.blockHeight * 5 - 30;
     this.status = 0;
-    this.sprite = "";
+    this.char = [
+        'images/char-boy.png',
+        'images/char-horn-girl.png',
+        'images/char-cat-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
+    ];
+    this.sprite = this.char[0];
     this.score = {
         points: 0,
         level: 1,
@@ -203,6 +210,7 @@ Player.prototype.gameOver = function() {
     //Overlay
     ctx.fillStyle = "rgba(0,0,0,0.7)";
     ctx.fillRect(canvasSchema.blockWidth*1-50,canvasSchema.blockHeight*2,canvasSchema.blockWidth*3+100,canvasSchema.blockHeight*3);
+    
     //Title
     ctx.font = "bold 18pt Courier";
     ctx.textAlign = "center";
@@ -212,8 +220,16 @@ Player.prototype.gameOver = function() {
     ctx.font = "bold 16pt Courier";
     ctx.textAlign = "left";
     var time = this.score.endTime - this.score.startTime;
-    ctx.fillText("Tempo: "+this.visibleTime(time),canvasSchema.blockWidth-10,canvasSchema.blockHeight*3.5);
-    ctx.fillText("Pontos: "+this.score.points,canvasSchema.blockWidth-10,canvasSchema.blockHeight*3.5+25);
+    //Estrelas
+    var stars = Math.ceil(this.score.points/(time/1000));
+    for(var i = 0; i <= stars; i++) {
+        if(i<5) {
+            ctx.drawImage(Resources.get("images/Star.png"), canvasSchema.blockWidth-25+50*i, canvasSchema.blockHeight*2+40,50,80);
+        }
+    }
+    //Game Info
+    ctx.fillText("Tempo: "+this.visibleTime(time),canvasSchema.blockWidth-10,canvasSchema.blockHeight*3.5+15);
+    ctx.fillText("Pontos: "+this.score.points,canvasSchema.blockWidth-10,canvasSchema.blockHeight*3.5+40);
 
 
     //Create the button
@@ -232,13 +248,6 @@ Player.prototype.createMenu = function() {
   //If character is not selected
   ctx.fillStyle = "rgba(0,0,0,0.7)";
   ctx.fillRect(canvasSchema.blockWidth*1-50,canvasSchema.blockHeight*1,canvasSchema.blockWidth*3+100,canvasSchema.blockHeight*5);
-  this.char = [
-    'images/char-boy.png',
-    'images/char-horn-girl.png',
-    'images/char-cat-girl.png',
-    'images/char-pink-girl.png',
-    'images/char-princess-girl.png'
-  ];
   //Create the title of the menu
   ctx.font = "bold 18pt Courier";
   ctx.textAlign = "center";
@@ -295,7 +304,6 @@ Player.prototype.selectChar = function(positionX,positionY) {
 
 //Move the player
 Player.prototype.move = function(key){
-  if(this.status == 1){
     switch (key){
         case 'left':
             if(this.x - canvasSchema.blockWidth >= 0){
@@ -318,11 +326,53 @@ Player.prototype.move = function(key){
             }
         break;
     }
-  }
 }
+
+//Move the player
+Player.prototype.moveSelection = function(key){
+    var sprite = this.sprite,
+        currentChar = 0;
+    this.char.forEach((item,index) => {
+        if(sprite === item){
+            currentChar = index;
+        }
+    });
+    switch (key){
+        case 'left':
+            if(currentChar%3 != 0){
+               this.sprite = this.char[currentChar-1];
+            }
+        break;
+        case 'right':
+            if(currentChar != 2 && currentChar != this.char.length-1){
+               this.sprite = this.char[currentChar+1];
+            }
+        break;
+        case 'up':
+            if(currentChar >= 3){
+               this.sprite = this.char[currentChar-3];
+            }
+        break;
+        case 'down':
+            if(currentChar < 2){
+               this.sprite = this.char[currentChar+3];
+            }
+        break;
+        case 'enter':
+            if(this.sprite != "") {
+                this.status = 1;
+            }
+        break;
+    }
+}
+
 //Handle the keyboard inputs
 Player.prototype.handleInput = function(key) {
-  player.move(key);
+  if(player.status == 1){
+      player.move(key);
+  }else if(player.status == 0){
+      player.moveSelection(key);
+  }
 }
 
 // Now instantiate your objects.
@@ -349,7 +399,8 @@ document.addEventListener('keyup', function(e) {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        13: 'enter'
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
