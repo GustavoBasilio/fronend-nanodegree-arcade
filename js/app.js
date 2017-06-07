@@ -372,6 +372,8 @@ Player.prototype.handleInput = function(key) {
       player.move(key);
   }else if(player.status == 0){
       player.moveSelection(key);
+  }else if(player.status === 2 && key === "enter") {
+      player = new Player();
   }
 }
 
