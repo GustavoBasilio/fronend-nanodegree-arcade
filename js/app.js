@@ -166,18 +166,23 @@ Player.prototype.generateEnemies = function() {
     }
 }
 
+//Transform milliseconds in minutes diference string
+Player.prototype.visibleTime = function(interval) {
+  var minutesDiff = Math.floor(((interval % 86400000) % 3600000) / 60000),
+      secondsDiff = Math.floor((interval/1000)%60);
+  minutesDiff = (minutesDiff.toString().length === 1) ? "0"+minutesDiff : minutesDiff;
+  secondsDiff = (secondsDiff.toString().length === 1) ? "0"+secondsDiff : secondsDiff;
+  return minutesDiff+":"+secondsDiff;
+}
+
 //Create current game player info
 Player.prototype.gameInfo = function (){
     //Create the timer
-    var timeDiff = new Date() - this.score.startTime,
-        minutesDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000),
-        secondsDiff = Math.floor((timeDiff/1000)%60);
-    minutesDiff = (minutesDiff.toString().length === 1) ? "0"+minutesDiff : minutesDiff;
-    secondsDiff = (secondsDiff.toString().length === 1) ? "0"+secondsDiff : secondsDiff;
+    var timeDiff = new Date() - this.score.startTime;
     ctx.font = "bold 18pt Courier";
     ctx.textAlign = "right";
     ctx.fillStyle = "#000000";
-    ctx.fillText(minutesDiff+":"+secondsDiff,canvasSchema.blockWidth*5,30);
+    ctx.fillText(this.visibleTime(timeDiff),canvasSchema.blockWidth*5,30);
 
     //Life Count
     for(var i=0;i<this.score.lifes;i++){
@@ -204,8 +209,22 @@ Player.prototype.gameOver = function() {
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText("GAME OVER",canvasSchema.blockWidth*2.5,canvasSchema.blockHeight*2.5);
 
+    ctx.font = "bold 16pt Courier";
+    ctx.textAlign = "left";
+    var time = this.score.endTime - this.score.startTime;
+    ctx.fillText("Tempo: "+this.visibleTime(time),canvasSchema.blockWidth-10,canvasSchema.blockHeight*3.5);
+    ctx.fillText("Pontos: "+this.score.points,canvasSchema.blockWidth-10,canvasSchema.blockHeight*3.5+25);
+
+
+    //Create the button
+    ctx.fillStyle = "#0084ea";
+    ctx.fillRect(canvasSchema.blockWidth*2-10,canvasSchema.blockHeight*4+30,canvasSchema.blockWidth+20,35);
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText("NEW GAME",canvasSchema.blockWidth*2.5,canvasSchema.blockHeight*4+55);
+
     //Charactem sprite
-    ctx.drawImage(Resources.get(this.sprite), canvasSchema.blockWidth*3, 35+(canvasSchema.blockHeight+100));
+    ctx.drawImage(Resources.get(this.sprite), canvasSchema.blockWidth*3, 35+(canvasSchema.blockHeight+80));
 }
 
 //Create the menu layout
@@ -247,6 +266,12 @@ Player.prototype.handleClick = function(event) {
       positionY = event.pageY - this.offsetTop - canvasSchema.marginTop;
   if(player.status == 0){
     player.selectChar(positionX,positionY);
+  }else if(player.status == 2) {
+    if(positionX > canvasSchema.blockWidth*2 && positionX < canvasSchema.blockWidth*3 && positionY > (canvasSchema.blockHeight*3+30)){
+      player = new Player();
+      allEnemies = [];
+      allGems = [];
+    }
   }
 }
 
@@ -255,7 +280,7 @@ Player.prototype.selectChar = function(positionX,positionY) {
   //Get he position of the click and the block clicked
   var positionColumn = (Math.floor(positionX/canvasSchema.blockWidth)-1),
       positionRow =(Math.floor(positionY/canvasSchema.blockHeight)-2);
-  if(positionX > canvasSchema.blockWidth*2 && positionY > (canvasSchema.blockHeight*5+15 -  canvasSchema.marginTop)) {
+  if(positionX > canvasSchema.blockWidth*2 && positionX < canvasSchema.blockWidth*3 && positionY > (canvasSchema.blockHeight*5+15 -  canvasSchema.marginTop) && positionY < (canvasSchema.blockHeight*+40 -  canvasSchema.marginTop)) {
     //Start the game
     if(this.sprite != "" && typeof this.sprite != "undefined"){
         this.score.startTime = new Date();
