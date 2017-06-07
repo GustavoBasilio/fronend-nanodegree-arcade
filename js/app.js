@@ -33,7 +33,9 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     if(this.status){
-        this.x += this.speed*dt+player.score.level;
+        if (this.speed > 0){
+          this.x += this.speed*dt+player.score.level;
+        }
         if(this.x > canvasSchema.width){
             this.status = 0;
         }
@@ -54,24 +56,25 @@ var Gem = function(type) {
             value: 5,
             speed: 0,
             x: (Math.floor(Math.random()*5))*canvasSchema.blockWidth,
-            y: (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30
+            y: (Math.floor(Math.random()*3)+2)*canvasSchema.blockHeight-30
         },
         green: {
-            path: 'images/Gem Green.png',
-            value: 10,
-            speed: 0,
-            x: (Math.floor(Math.random()*5))*canvasSchema.blockWidth,
-            y: (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30
-        },
-        orange: {
             path: 'images/Gem Green.png',
             value: 20,
             speed: 0,
             x: (Math.floor(Math.random()*5))*canvasSchema.blockWidth,
-            y: (Math.floor(Math.random()*3)+1)*canvasSchema.blockHeight-30
+            y: (Math.floor(Math.random()*3)+2)*canvasSchema.blockHeight-30
+        },
+        orange: {
+            path: 'images/Gem Orange.png',
+            value: 50,
+            speed: 0,
+            x: (Math.floor(Math.random()*5))*canvasSchema.blockWidth,
+            y: (Math.floor(Math.random()*3)+2)*canvasSchema.blockHeight-30
         }
     };
     this.type = type;
+    this.value = typeSheet[this.type].value;
     this.x = typeSheet[this.type].x;
     this.y = typeSheet[this.type].y;
     this.sprite = typeSheet[this.type].path;
@@ -81,11 +84,11 @@ var Gem = function(type) {
 
 
 Gem.prototype.update = function  (){
-    
+
 }
 
 Gem.prototype.render = function  (){
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x+20, this.y-20,60,80);
 }
 
 
@@ -100,7 +103,7 @@ var Player = function() {
     this.score = {
         points: 0,
         level: 1,
-        lifes: 1,
+        lifes: 3,
         startTime: new Date(),
         endTime: new Date()
     }
@@ -116,6 +119,28 @@ Player.prototype.update = function(dt) {
         this.y = new Player().y;
         this.score.points += 10;
         this.score.level += 1;
+        allGems = [];
+        allEnemies = allEnemies.filter((enemy) => {
+          if(enemy.type == "rock") return false;
+          return true;
+        });
+        var rarity = [
+          {name: "blue",weigth:10},
+          {name: "green",weigth:5+player.score.level},
+          {name: "orange",weigth:1+Math.ceil(player.score.level*1.5)}
+        ], arrayOds = [];
+        rarity.map((gem) => {
+          for(var i = 0;i<gem.weigth;i++){
+            arrayOds.push(gem.name);
+          }
+        });
+        for (var i = 0; i < Math.floor(Math.random()*2)+1; i++) {
+          type = arrayOds[Math.floor(Math.random()*(arrayOds.length))];
+          allGems.push(new Gem(type));
+        }
+        for (var i = 0; i < Math.floor(Math.random()*2)+1; i++) {
+          allEnemies.push(new Enemy("rock"));
+        }
     }
 }
 
@@ -160,9 +185,10 @@ Player.prototype.gameInfo = function (){
     }
 
     //Score count
-    ctx.fillText("SCORE:"+this.score.points,canvasSchema.blockWidth*1,30);
+    ctx.textAlign = "left";
+    ctx.fillText("SCORE:"+this.score.points,0,30);
 
-    //Level 
+    //Level
     ctx.textAlign = "center";
     ctx.fillText("LEVEL "+this.score.level,canvasSchema.blockWidth*2.5,30);
 }
@@ -177,7 +203,7 @@ Player.prototype.gameOver = function() {
     ctx.textAlign = "center";
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText("GAME OVER",canvasSchema.blockWidth*2.5,canvasSchema.blockHeight*2.5);
-    
+
     //Charactem sprite
     ctx.drawImage(Resources.get(this.sprite), canvasSchema.blockWidth*3, 35+(canvasSchema.blockHeight+100));
 }
@@ -287,7 +313,7 @@ var canvasSchema = {
     numCols: 5
 }
 var allEnemies = [],
-    allGems = [new Gem("blue")];
+    allGems = [];
 var player = new Player();
 
 

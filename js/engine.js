@@ -87,10 +87,23 @@ var Engine = (function(global) {
         allEnemies.forEach((enemy) => {
             if(enemy.y === player.y){
                 if(enemy.x + canvasSchema.blockWidth - 40 >  player.x && enemy.x < player.x + canvasSchema.blockWidth - 40) {
-                    player.score.lifes -= 1;
-                    reset();
+                    if(enemy.type == "bug"){
+                      player.score.lifes -= 1;
+                      reset();
+                    }else if (enemy.type == "rock"){
+                      player.y += canvasSchema.blockHeight;
+                    }
                 }
             }
+        });
+        allGems = allGems.filter((gem) => {
+            if(gem.y-canvasSchema.blockHeight === player.y){
+                if(gem.x + canvasSchema.blockWidth >  player.x && gem.x < player.x + canvasSchema.blockWidth) {
+                    player.score.points += gem.value
+                    return false;
+                }
+            }
+            return true;
         });
     }
     /* This is called by the update function and loops through all of the
@@ -101,11 +114,11 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
-        });
         allGems.forEach(function(gem) {
             gem.update(dt);
+        });
+        allEnemies.forEach(function(enemy) {
+            enemy.update(dt);
         });
         player.update();
     }
@@ -160,6 +173,9 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+        allGems.forEach(function(gem) {
+           gem.render();
+        });
         allEnemies = allEnemies.filter((enemy) => {
             if(enemy.status === 1){
                 enemy.render();
@@ -169,10 +185,6 @@ var Engine = (function(global) {
             }
         });
 
-        allGems.forEach(function(gem) {
-            gem.render();
-        });
-        
         player.render();
     }
 
